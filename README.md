@@ -1,54 +1,23 @@
-# balance-log-frontend
+# Balance Log — frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+Balance Log is a weight tracker. Log your weight whenever you step on the scale,
+see the history and the curve, set a goal weight and follow your progress.
 
-## Recommended IDE Setup
+This repo is the Vue frontend. The Spring Boot REST API is in balance-log-backend.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Run
 
-## Recommended Browser Setup
+Needs Node 26 and the backend on http://localhost:8080 (`./gradlew bootRun` in balance-log-backend).
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+    npm install
+    npm run dev
 
-## Type Support for `.vue` Imports in TS
+- open http://localhost:5173
+- register, then log in
+- the weights page shows sample entries as a curve and a list
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+## Test
 
-## Customize configuration
+    npm run test:unit
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+Webtechnologien project, HTW Berlin, WiSe 2026/27.
