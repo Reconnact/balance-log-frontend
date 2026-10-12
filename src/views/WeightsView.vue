@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import WeightChart from '@/components/WeightChart.vue'
 import WeightList from '@/components/WeightList.vue'
 import type { WeightEntry } from '@/types'
 
@@ -33,5 +34,8 @@ const entries: WeightEntry[] = [
 
 <template>
   <h1 class="h3 mb-4">Weights</h1>
+  <div class="mb-4">
+    <WeightChart :entries="entries" />
+  </div>
   <WeightList :entries="entries" />
 </template>
