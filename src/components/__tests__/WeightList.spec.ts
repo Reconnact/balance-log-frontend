@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, type VueWrapper } from '@vue/test-utils'
 import WeightList from '../WeightList.vue'
+
+const entry = {
+  id: '3f2b8c1e-6d4a-4f7e-9b2a-1c5d8e0f4a71',
+  measuredAt: '2026-10-01T06:30:00Z',
+  weightKg: 82.4,
+}
+
+function button(wrapper: VueWrapper, text: string) {
+  return wrapper.findAll('tbody tr button').find((b) => b.text() === text)!
+}
 
 describe('WeightList', () => {
   it('renders a row per entry', () => {
@@ -33,5 +43,21 @@ describe('WeightList', () => {
 
     expect(wrapper.find('table').exists()).toBe(false)
     expect(wrapper.text()).toContain('No entries yet.')
+  })
+
+  it('emits edit with the entry of its row', async () => {
+    const wrapper = mount(WeightList, { props: { entries: [entry] } })
+
+    await button(wrapper, 'Edit').trigger('click')
+
+    expect(wrapper.emitted('edit')).toEqual([[entry]])
+  })
+
+  it('emits delete with the entry of its row', async () => {
+    const wrapper = mount(WeightList, { props: { entries: [entry] } })
+
+    await button(wrapper, 'Delete').trigger('click')
+
+    expect(wrapper.emitted('delete')).toEqual([[entry]])
   })
 })
