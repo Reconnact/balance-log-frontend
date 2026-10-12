@@ -9,7 +9,7 @@ const props = defineProps<{ entry?: WeightEntry }>()
 const emit = defineEmits<{ saved: [entry: WeightEntry]; cancel: [] }>()
 
 const weightKg = ref<number | ''>(props.entry?.weightKg ?? '')
-const measuredAt = ref(props.entry ? toLocalInput(props.entry.measuredAt) : '')
+const measuredAt = ref(toLocalInput(props.entry?.measuredAt ?? new Date().toISOString()))
 const errors = ref<Record<string, string | undefined>>({})
 
 // datetime-local wants local time without a zone, toISOString gives UTC
@@ -74,7 +74,7 @@ async function submit() {
     </div>
     <div class="d-flex gap-2 mt-3">
       <button type="submit" class="btn btn-dark">{{ entry ? 'Save' : 'Log' }}</button>
-      <button v-if="entry" type="button" class="btn btn-outline-secondary" @click="emit('cancel')">
+      <button type="button" class="btn btn-outline-secondary" @click="emit('cancel')">
         Cancel
       </button>
     </div>

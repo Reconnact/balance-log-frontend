@@ -1,8 +1,8 @@
 import client from './client'
 import type { WeightEntry } from '@/types'
 
-export async function listWeightEntries(): Promise<WeightEntry[]> {
-  return (await client.get<WeightEntry[]>('/weight-entries')).data
+export async function listWeightEntries(from?: string): Promise<WeightEntry[]> {
+  return (await client.get<WeightEntry[]>('/weight-entries', { params: { from } })).data
 }
 
 export interface WeightEntryRequest {
@@ -19,4 +19,8 @@ export async function updateWeightEntry(
   request: WeightEntryRequest,
 ): Promise<WeightEntry> {
   return (await client.put<WeightEntry>(`/weight-entries/${id}`, request)).data
+}
+
+export async function deleteWeightEntry(id: string): Promise<void> {
+  await client.delete(`/weight-entries/${id}`)
 }

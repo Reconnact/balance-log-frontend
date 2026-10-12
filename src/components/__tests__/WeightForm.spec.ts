@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { AxiosError, AxiosHeaders } from 'axios'
 import WeightForm from '../WeightForm.vue'
@@ -24,7 +24,13 @@ function failedWith(status: number, data: unknown) {
 }
 
 describe('WeightForm', () => {
-  it('logs an entry without a time and emits saved', async () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('logs an entry at the current minute and emits saved', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-12T10:00:30Z'))
     vi.mocked(createWeightEntry).mockResolvedValue(entry)
     const wrapper = mount(WeightForm)
 
@@ -32,8 +38,23 @@ describe('WeightForm', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(createWeightEntry).toHaveBeenCalledWith({ weightKg: 82.4 })
+    expect(createWeightEntry).toHaveBeenCalledWith({
+      measuredAt: '2026-10-12T10:00:00.000Z',
+      weightKg: 82.4,
+    })
     expect(wrapper.emitted('saved')).toEqual([[entry]])
+  })
+
+  it('logs an entry without a time when the field is cleared', async () => {
+    vi.mocked(createWeightEntry).mockResolvedValue(entry)
+    const wrapper = mount(WeightForm)
+
+    await wrapper.find('#weightKg').setValue('82.4')
+    await wrapper.find('#measuredAt').setValue('')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(createWeightEntry).toHaveBeenLastCalledWith({ weightKg: 82.4 })
   })
 
   it('edits an entry with its time and emits saved', async () => {
@@ -82,17 +103,11 @@ describe('WeightForm', () => {
     expect(wrapper.emitted('saved')).toBeUndefined()
   })
 
-  it('emits cancel from the edit form', async () => {
-    const wrapper = mount(WeightForm, { props: { entry } })
+  it('emits cancel', async () => {
+    const wrapper = mount(WeightForm)
 
     await wrapper.find('button[type="button"]').trigger('click')
 
     expect(wrapper.emitted('cancel')).toHaveLength(1)
-  })
-
-  it('offers no cancel when logging', () => {
-    const wrapper = mount(WeightForm)
-
-    expect(wrapper.find('button[type="button"]').exists()).toBe(false)
   })
 })
