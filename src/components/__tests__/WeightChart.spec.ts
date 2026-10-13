@@ -38,4 +38,17 @@ describe('WeightChart', () => {
     expect(x.type).toBe('linear')
     expect(x.ticks.callback(Date.parse('2026-10-01T12:00:00Z'))).toBe('1 Oct')
   })
+
+  it('draws no goal line without a goal', () => {
+    expect(line.props('data').datasets).toHaveLength(1)
+  })
+
+  it('draws the goal as a flat line across the entries', async () => {
+    await wrapper.setProps({ targetKg: 75 })
+
+    expect(wrapper.findComponent(Line).props('data').datasets[1]!.data).toEqual([
+      { x: 1790836200000, y: 75 },
+      { x: 1791615300000, y: 75 },
+    ])
+  })
 })

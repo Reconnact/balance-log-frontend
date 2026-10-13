@@ -9,8 +9,10 @@ import {
   listWeightEntries,
   updateWeightEntry,
 } from '@/api/weights'
+import { getGoal } from '@/api/goal'
 
 vi.mock('@/api/weights')
+vi.mock('@/api/goal')
 
 // jsdom has no modal dialog
 HTMLDialogElement.prototype.showModal = function () {
@@ -80,6 +82,14 @@ describe('WeightsView', () => {
     expect(rows[0]!.text()).toContain('82.4 kg')
     expect(rows[1]!.text()).toContain('82.1 kg')
     expect(wrapper.findComponent(WeightChart).props('entries')).toEqual(entries)
+  })
+
+  it('passes the goal to the chart', async () => {
+    vi.mocked(getGoal).mockResolvedValue({ targetKg: 75 })
+
+    const wrapper = await mountView()
+
+    expect(wrapper.findComponent(WeightChart).props('targetKg')).toBe(75)
   })
 
   it('loads all entries first and reloads from the start of a chosen period', async () => {

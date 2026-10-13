@@ -5,11 +5,13 @@ import WeightChart from '@/components/WeightChart.vue'
 import WeightForm from '@/components/WeightForm.vue'
 import WeightList from '@/components/WeightList.vue'
 import { deleteWeightEntry, listWeightEntries } from '@/api/weights'
+import { getGoal } from '@/api/goal'
 import { periodFrom, type Period } from '@/period'
-import type { WeightEntry } from '@/types'
+import type { Goal, WeightEntry } from '@/types'
 
 const entries = ref<WeightEntry[]>([])
 const period = ref<Period>('all')
+const goal = ref<Goal | null>()
 const form = ref<{ entry?: WeightEntry }>()
 const dialog = useTemplateRef<HTMLDialogElement>('form-dialog')
 
@@ -35,6 +37,9 @@ async function remove(entry: WeightEntry) {
 }
 
 onMounted(load)
+onMounted(async () => {
+  goal.value = await getGoal()
+})
 watch(period, load)
 </script>
 
@@ -47,7 +52,7 @@ watch(period, load)
     <PeriodFilter v-model="period" />
   </div>
   <div class="mb-4">
-    <WeightChart :entries="entries" />
+    <WeightChart :entries="entries" :target-kg="goal?.targetKg" />
   </div>
   <WeightList :entries="entries" @edit="open" @delete="remove" />
 
