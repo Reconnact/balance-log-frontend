@@ -25,6 +25,9 @@
 
   --container-content: 52rem;
 
+  --text-title: 2.125rem;
+  --text-label: 0.8125rem;
+
   --color-bg: #eef0f3;
   --color-surface: rgb(255 255 255 / 0.78);
   --color-surface-strong: rgb(246 247 249 / 0.72);
@@ -63,6 +66,88 @@
 
 @utility glass {
   backdrop-filter: blur(20px) saturate(1.4);
+}
+
+@layer components {
+  .panel {
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+
+  .field {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font: inherit;
+    font-size: 1rem;
+
+    &[aria-invalid='true'] {
+      border-color: var(--color-danger);
+    }
+  }
+
+  .btn {
+    --btn-ink: var(--color-ink);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    box-shadow: none;
+    color: var(--btn-ink);
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.25;
+    text-decoration: none;
+    cursor: pointer;
+    backdrop-filter: blur(20px) saturate(1.4);
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    &[aria-busy='true'] {
+      opacity: 1;
+      color: transparent;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: auto;
+        border: 2px solid var(--btn-ink);
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: btn-spin 0.8s linear infinite;
+      }
+    }
+  }
+
+  .btn-primary {
+    --btn-ink: var(--color-on-accent);
+    border-color: transparent;
+    background: var(--color-accent);
+  }
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 @layer base {
