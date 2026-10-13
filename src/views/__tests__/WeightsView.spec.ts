@@ -11,6 +11,7 @@ import {
 } from '@/api/weights'
 import { getGoal } from '@/api/goal'
 import { toasts } from '@/toasts'
+import { menuOpen } from '@/menu'
 
 vi.mock('@/api/weights')
 vi.mock('@/api/goal')
@@ -132,6 +133,16 @@ describe('WeightsView', () => {
     })
     expect(listWeightEntries).toHaveBeenCalledTimes(2)
     expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(false)
+  })
+
+  it('closes the menu before the add button opens the dialog', async () => {
+    menuOpen.value = true
+    const wrapper = await mountView()
+
+    await wrapper.find('[aria-label="Log weight"]').trigger('click')
+
+    expect(menuOpen.value).toBe(false)
+    expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
   })
 
   it('fills the dialog before it opens, so the browser focuses the weight field', async () => {

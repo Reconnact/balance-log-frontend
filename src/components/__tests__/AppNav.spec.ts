@@ -3,6 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import AppNav from '../AppNav.vue'
 import router from '@/router'
 import { token } from '@/auth'
+import { menuOpen } from '@/menu'
 
 async function mountLoggedIn() {
   token.value = 'abc'
@@ -13,6 +14,7 @@ async function mountLoggedIn() {
 describe('AppNav', () => {
   afterEach(() => {
     token.value = null
+    menuOpen.value = false
     document.body.innerHTML = ''
   })
 
