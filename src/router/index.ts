@@ -24,6 +24,7 @@ router.beforeEach((to) => {
   if (!token.value && !to.meta.public) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
+  if (token.value && to.meta.public) return '/weights'
 })
 
 router.afterEach((to) => {

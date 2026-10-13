@@ -14,6 +14,16 @@ describe('router guard', () => {
     expect(router.currentRoute.value.query.redirect).toBe('/weights')
   })
 
+  it('sends a logged-in user from login and register to the weights', async () => {
+    token.value = 'abc'
+
+    await router.push('/login')
+    expect(router.currentRoute.value.path).toBe('/weights')
+
+    await router.push('/register')
+    expect(router.currentRoute.value.path).toBe('/weights')
+  })
+
   it('lets the route through with a token', async () => {
     token.value = 'abc'
 
