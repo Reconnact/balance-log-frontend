@@ -47,7 +47,7 @@ async function submit() {
             :aria-invalid="!!errors.email"
             :aria-describedby="errors.email ? 'email-error' : undefined"
           />
-          <p v-if="errors.email" id="email-error" class="mt-1.5 mb-0 text-label text-danger">
+          <p v-if="errors.email" id="email-error" class="mt-1.5 text-label text-danger">
             {{ errors.email }}
           </p>
         </div>
@@ -62,7 +62,7 @@ async function submit() {
             :aria-invalid="!!errors.password"
             :aria-describedby="errors.password ? 'password-error' : undefined"
           />
-          <p v-if="errors.password" id="password-error" class="mt-1.5 mb-0 text-label text-danger">
+          <p v-if="errors.password" id="password-error" class="mt-1.5 text-label text-danger">
             {{ errors.password }}
           </p>
         </div>
@@ -78,7 +78,7 @@ async function submit() {
     </div>
     <p class="mt-5 text-center text-muted">
       Already registered?
-      <RouterLink to="/login" class="font-medium text-accent no-underline">Log in</RouterLink>
+      <RouterLink to="/login" class="font-medium text-accent">Log in</RouterLink>
     </p>
   </div>
 </template>

@@ -48,6 +48,6 @@ async function submit() {
         Set goal
       </button>
     </div>
-    <p v-if="error" id="targetKg-error" class="mt-1.5 mb-0 text-label text-danger">{{ error }}</p>
+    <p v-if="error" id="targetKg-error" class="mt-1.5 text-label text-danger">{{ error }}</p>
   </form>
 </template>

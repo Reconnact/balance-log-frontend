@@ -64,7 +64,7 @@ async function submit() {
         :aria-invalid="!!errors.weightKg"
         :aria-describedby="errors.weightKg ? 'weightKg-error' : undefined"
       />
-      <p v-if="errors.weightKg" id="weightKg-error" class="mt-1.5 mb-0 text-label text-danger">
+      <p v-if="errors.weightKg" id="weightKg-error" class="mt-1.5 text-label text-danger">
         {{ errors.weightKg }}
       </p>
     </div>
@@ -80,7 +80,7 @@ async function submit() {
         :aria-invalid="!!errors.measuredAt"
         :aria-describedby="errors.measuredAt ? 'measuredAt-error' : undefined"
       />
-      <p v-if="errors.measuredAt" id="measuredAt-error" class="mt-1.5 mb-0 text-label text-danger">
+      <p v-if="errors.measuredAt" id="measuredAt-error" class="mt-1.5 text-label text-danger">
         {{ errors.measuredAt }}
       </p>
     </div>

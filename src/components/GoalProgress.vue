@@ -21,24 +21,24 @@ const toGo = computed(() => {
 </script>
 
 <template>
-  <dl class="panel m-0">
+  <dl class="panel">
     <div class="border-b border-line px-4 pt-3 pb-4">
       <dt class="text-label font-medium text-muted">Latest</dt>
-      <dd class="m-0 text-title font-bold">
+      <dd class="text-title font-bold">
         {{ progress.latestKg.toFixed(1) }} <span class="text-lg font-semibold text-muted">kg</span>
       </dd>
     </div>
     <div :class="row">
-      <dt class="font-normal text-muted">Goal</dt>
-      <dd class="m-0 font-semibold">{{ progress.targetKg.toFixed(1) }} kg</dd>
+      <dt class="text-muted">Goal</dt>
+      <dd class="font-semibold">{{ progress.targetKg.toFixed(1) }} kg</dd>
     </div>
     <div :class="row">
-      <dt class="font-normal text-muted">To go</dt>
-      <dd class="m-0 font-semibold">{{ toGo }}</dd>
+      <dt class="text-muted">To go</dt>
+      <dd class="font-semibold">{{ toGo }}</dd>
     </div>
     <div :class="row">
-      <dt class="font-normal text-muted">Trend, last 28 days</dt>
-      <dd class="m-0 font-semibold">
+      <dt class="text-muted">Trend, last 28 days</dt>
+      <dd class="font-semibold">
         <template v-if="progress.kgPerWeek === null">
           No trend yet: log at least 2 weights over 7 days.
         </template>

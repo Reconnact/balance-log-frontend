@@ -50,7 +50,7 @@ onMounted(load)
     <template v-else>
       <GoalForm :target-kg="goal?.targetKg" @saved="saved" />
       <GoalProgress v-if="progress" :progress="progress" />
-      <p v-else class="panel m-0 px-4 py-6 text-center text-muted">
+      <p v-else class="panel px-4 py-6 text-center text-muted">
         {{ goal ? 'Log a weight to see your progress.' : 'Set a goal to see your progress.' }}
       </p>
     </template>

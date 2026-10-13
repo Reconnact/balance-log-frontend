@@ -18,7 +18,7 @@ const shown = ref(false)
     />
     <button
       type="button"
-      class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-xl border-0 bg-transparent text-muted aria-pressed:text-ink"
+      class="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-xl text-muted aria-pressed:text-ink"
       aria-label="Show password"
       :aria-pressed="shown"
       @click="shown = !shown"

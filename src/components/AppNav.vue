@@ -20,15 +20,15 @@ function onLogout() {
 }
 
 const item =
-  'inline-flex min-h-11 items-center gap-2 rounded-xl border-0 bg-transparent px-3 text-base font-medium text-muted no-underline hover:text-ink [&.router-link-active]:text-ink'
+  'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-base font-medium text-muted hover:text-ink [&.router-link-active]:text-ink'
 const row =
-  'flex min-h-11 w-full items-center gap-3 border-x-0 border-t-0 border-b border-line bg-transparent px-0 text-base last:border-b-0 font-medium text-ink no-underline'
+  'flex min-h-11 w-full items-center gap-3 border-b border-line text-base font-medium text-ink last:border-b-0'
 </script>
 
 <template>
   <header class="glass sticky top-0 z-20 border-b border-line bg-surface-strong">
     <nav class="mx-auto flex h-14 max-w-content items-center px-4">
-      <RouterLink to="/" class="mr-auto text-[17px] font-semibold text-ink no-underline">
+      <RouterLink to="/" class="mr-auto text-[17px] font-semibold text-ink">
         Balance Log
       </RouterLink>
       <template v-if="isLoggedIn">
@@ -40,7 +40,7 @@ const row =
         </div>
         <button
           type="button"
-          class="-mr-3 inline-flex size-11 items-center justify-center rounded-xl border-0 bg-transparent text-ink sm:hidden"
+          class="-mr-3 inline-flex size-11 items-center justify-center rounded-xl text-ink sm:hidden"
           aria-label="Menu"
           aria-controls="nav-menu"
           :aria-expanded="menuOpen"

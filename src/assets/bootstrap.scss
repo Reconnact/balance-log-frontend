@@ -1,5 +1,0 @@
-@use 'sass:meta';
-
-@layer bootstrap {
-  @include meta.load-css('bootstrap/scss/bootstrap', $with: ('enable-important-utilities': false));
-}

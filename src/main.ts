@@ -1,4 +1,3 @@
-import './assets/bootstrap.scss'
 import './assets/main.css'
 import './theme'
 

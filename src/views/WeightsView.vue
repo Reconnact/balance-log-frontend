@@ -70,7 +70,7 @@ watch(period, load)
 
 <template>
   <div class="mb-5 flex items-center justify-between">
-    <h1 class="m-0 text-title font-bold sm:text-3xl">Weights</h1>
+    <h1 class="text-title font-bold sm:text-3xl">Weights</h1>
     <button type="button" class="btn btn-primary hidden sm:inline-flex" @click="open()">
       Log weight
     </button>

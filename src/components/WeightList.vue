@@ -11,12 +11,11 @@ function name(entry: WeightEntry) {
   return `${formatKg(entry.weightKg)}, ${formatDate(entry.measuredAt)}`
 }
 
-const icon =
-  'inline-flex size-11 items-center justify-center rounded-xl border-0 bg-transparent text-muted hover:text-ink'
+const icon = 'inline-flex size-11 items-center justify-center rounded-xl text-muted hover:text-ink'
 </script>
 
 <template>
-  <ul v-if="entries.length" class="panel m-0 list-none p-0">
+  <ul v-if="entries.length" class="panel">
     <li
       v-for="entry in entries"
       :key="entry.id"
@@ -48,7 +47,7 @@ const icon =
       </span>
     </li>
   </ul>
-  <p v-else class="panel m-0 px-4 py-6 text-center text-muted">
+  <p v-else class="panel px-4 py-6 text-center text-muted">
     No weights yet. Log one to start the curve.
   </p>
 </template>
