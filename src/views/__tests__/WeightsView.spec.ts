@@ -10,6 +10,7 @@ import {
   updateWeightEntry,
 } from '@/api/weights'
 import { getGoal } from '@/api/goal'
+import { toasts } from '@/toasts'
 
 vi.mock('@/api/weights')
 vi.mock('@/api/goal')
@@ -73,7 +74,12 @@ describe('WeightsView', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+    toasts.value = []
   })
+
+  function toastTexts() {
+    return toasts.value.map((t) => t.text)
+  }
 
   it('shows the entries from the API in the list and the chart', async () => {
     const wrapper = await mountView()
@@ -194,7 +200,10 @@ describe('WeightsView', () => {
     expect(dialog.text()).toContain('Delete 82.4 kg from 1 Oct 2026?')
     expect(deleteWeightEntry).not.toHaveBeenCalled()
 
-    await dialog.findAll('button').find((b) => b.text() === 'Delete')!.trigger('click')
+    await dialog
+      .findAll('button')
+      .find((b) => b.text() === 'Delete')!
+      .trigger('click')
     await flushPromises()
 
     expect(deleteWeightEntry).toHaveBeenCalledWith(entries[0]!.id)
@@ -259,5 +268,91 @@ describe('WeightsView', () => {
 
     await wrapper.find('dialog').trigger('click')
     expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(false)
+  })
+
+  it('shows skeleton panels until the first load arrives', async () => {
+    let arrive!: (value: typeof entries) => void
+    vi.mocked(listWeightEntries).mockReturnValue(new Promise((resolve) => (arrive = resolve)))
+    const wrapper = mount(WeightsView, { global: { stubs: { WeightChart: true } } })
+    await flushPromises()
+
+    expect(wrapper.find('[aria-busy="true"]').exists()).toBe(true)
+    expect(wrapper.find('li').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('No weights yet.')
+
+    arrive(entries)
+    await flushPromises()
+
+    expect(wrapper.find('[aria-busy="true"]').exists()).toBe(false)
+    expect(wrapper.findAll('li')).toHaveLength(2)
+  })
+
+  it('shows the empty sentence once an empty list arrived', async () => {
+    vi.mocked(listWeightEntries).mockResolvedValue([])
+
+    const wrapper = await mountView()
+
+    expect(wrapper.text()).toContain('No weights yet. Log one to start the curve.')
+    expect(wrapper.findComponent(WeightChart).exists()).toBe(false)
+  })
+
+  it('offers Try again after a failed load', async () => {
+    vi.mocked(listWeightEntries).mockRejectedValueOnce(failedWith(503, {}))
+    const wrapper = await mountView()
+
+    expect(wrapper.text()).toContain('Not loaded.')
+    expect(wrapper.find('li').exists()).toBe(false)
+
+    await button(wrapper, 'Try again').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('Not loaded.')
+    expect(wrapper.findAll('li')).toHaveLength(2)
+  })
+
+  it('opens the log dialog from the floating button', async () => {
+    const wrapper = await mountView()
+
+    await wrapper.find('button[aria-label="Log weight"]').trigger('click')
+
+    expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
+    expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('')
+  })
+
+  it('confirms a logged weight with a toast', async () => {
+    vi.mocked(createWeightEntry).mockResolvedValue(entries[0]!)
+    const wrapper = await mountView()
+
+    await button(wrapper, 'Log weight').trigger('click')
+    await wrapper.find('dialog #weightKg').setValue('82.4')
+    await wrapper.find('dialog form').trigger('submit')
+    await flushPromises()
+
+    expect(toastTexts()).toEqual(['Weight logged'])
+  })
+
+  it('confirms an edited entry with a toast', async () => {
+    vi.mocked(updateWeightEntry).mockResolvedValue(entries[0]!)
+    const wrapper = await mountView()
+
+    await rowButton(wrapper, 0, 'Edit').trigger('click')
+    await wrapper.find('dialog form').trigger('submit')
+    await flushPromises()
+
+    expect(toastTexts()).toEqual(['Entry saved'])
+  })
+
+  it('confirms a deleted entry with a toast', async () => {
+    vi.mocked(deleteWeightEntry).mockResolvedValue()
+    const wrapper = await mountView()
+
+    await rowButton(wrapper, 0, 'Delete').trigger('click')
+    await confirmDialog(wrapper)!
+      .findAll('button')
+      .find((b) => b.text() === 'Delete')!
+      .trigger('click')
+    await flushPromises()
+
+    expect(toastTexts()).toEqual(['Entry deleted'])
   })
 })

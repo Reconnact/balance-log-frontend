@@ -48,5 +48,7 @@ const icon =
       </span>
     </li>
   </ul>
-  <p v-else class="text-body-secondary">No entries yet.</p>
+  <p v-else class="panel m-0 px-4 py-6 text-center text-muted">
+    No weights yet. Log one to start the curve.
+  </p>
 </template>

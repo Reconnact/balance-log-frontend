@@ -28,14 +28,14 @@ describe('WeightList', () => {
     expect(rows[0]!.text()).toContain('82.4 kg')
     expect(rows[0]!.text()).toMatch(/1 Oct 2026, \d\d:\d\d/)
     expect(rows[1]!.text()).toContain('82.0 kg')
-    expect(wrapper.text()).not.toContain('No entries yet.')
+    expect(wrapper.text()).not.toContain('No weights yet.')
   })
 
   it('shows the empty state without entries', () => {
     const wrapper = mount(WeightList, { props: { entries: [] } })
 
     expect(wrapper.find('li').exists()).toBe(false)
-    expect(wrapper.text()).toContain('No entries yet.')
+    expect(wrapper.text()).toBe('No weights yet. Log one to start the curve.')
   })
 
   it('names the entry in its icon buttons', () => {
