@@ -7,9 +7,9 @@ import { toasts } from '@/toasts'
     tag="ul"
     aria-live="polite"
     class="pointer-events-none fixed inset-x-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-30 flex flex-col items-end gap-2"
-    enter-from-class="opacity-0 translate-y-2"
+    enter-from-class="translate-x-[calc(100%+1rem)]"
     leave-to-class="opacity-0"
-    enter-active-class="transition duration-200 motion-reduce:transition-none"
+    enter-active-class="transition duration-200 ease-in-out motion-reduce:transition-none"
     leave-active-class="transition duration-200 motion-reduce:transition-none"
   >
     <li
