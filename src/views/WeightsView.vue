@@ -4,9 +4,11 @@ import PeriodFilter from '@/components/PeriodFilter.vue'
 import WeightChart from '@/components/WeightChart.vue'
 import WeightForm from '@/components/WeightForm.vue'
 import WeightList from '@/components/WeightList.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { deleteWeightEntry, listWeightEntries } from '@/api/weights'
 import { getGoal } from '@/api/goal'
 import { periodFrom, type Period } from '@/period'
+import { formatDate, formatKg } from '@/format'
 import type { Goal, WeightEntry } from '@/types'
 
 const entries = ref<WeightEntry[]>([])
@@ -14,6 +16,7 @@ const period = ref<Period>('all')
 const goal = ref<Goal | null>()
 const form = ref<{ entry?: WeightEntry }>()
 const dialog = useTemplateRef<HTMLDialogElement>('form-dialog')
+const deleting = ref<WeightEntry>()
 
 async function load() {
   entries.value = await listWeightEntries(periodFrom(period.value, new Date()))
@@ -36,6 +39,7 @@ function closeOnBackdrop(event: MouseEvent) {
 }
 
 async function remove(entry: WeightEntry) {
+  deleting.value = undefined
   await deleteWeightEntry(entry.id)
   await load()
 }
@@ -58,7 +62,7 @@ watch(period, load)
   <div class="mb-4">
     <WeightChart :entries="entries" :target-kg="goal?.targetKg" />
   </div>
-  <WeightList :entries="entries" @edit="open" @delete="remove" />
+  <WeightList :entries="entries" @edit="open" @delete="deleting = $event" />
 
   <dialog ref="form-dialog" @close="form = undefined" @click="closeOnBackdrop">
     <div v-if="form" class="p-5">
@@ -66,4 +70,12 @@ watch(period, load)
       <WeightForm :entry="form.entry" @saved="saved" @cancel="dialog?.close()" />
     </div>
   </dialog>
+
+  <ConfirmDialog
+    v-if="deleting"
+    :message="`Delete ${formatKg(deleting.weightKg)} from ${formatDate(deleting.measuredAt)}?`"
+    confirm-label="Delete"
+    @confirm="remove(deleting)"
+    @cancel="deleting = undefined"
+  />
 </template>

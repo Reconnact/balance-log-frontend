@@ -142,6 +142,12 @@
     border-color: transparent;
     background: var(--color-accent);
   }
+
+  .btn-danger {
+    --btn-ink: var(--color-on-accent);
+    border-color: transparent;
+    background: var(--color-danger);
+  }
 }
 
 @keyframes btn-spin {

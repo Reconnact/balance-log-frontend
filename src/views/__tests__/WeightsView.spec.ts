@@ -57,11 +57,12 @@ function button(wrapper: VueWrapper, text: string) {
   return wrapper.findAll('button').find((b) => b.text() === text)!
 }
 
-function rowButton(wrapper: VueWrapper, row: number, text: string) {
-  return wrapper
-    .findAll('tbody tr')
-    [row]!.findAll('button')
-    .find((b) => b.text() === text)!
+function rowButton(wrapper: VueWrapper, row: number, action: 'Edit' | 'Delete') {
+  return wrapper.findAll('li')[row]!.find(`button[aria-label^="${action}"]`)
+}
+
+function confirmDialog(wrapper: VueWrapper) {
+  return wrapper.findAll('dialog').find((d) => d.text().startsWith('Delete'))
 }
 
 describe('WeightsView', () => {
@@ -77,7 +78,7 @@ describe('WeightsView', () => {
   it('shows the entries from the API in the list and the chart', async () => {
     const wrapper = await mountView()
 
-    const rows = wrapper.findAll('tbody tr')
+    const rows = wrapper.findAll('li')
     expect(rows).toHaveLength(2)
     expect(rows[0]!.text()).toContain('82.4 kg')
     expect(rows[1]!.text()).toContain('82.1 kg')
@@ -184,15 +185,35 @@ describe('WeightsView', () => {
     expect(wrapper.find('dialog form').exists()).toBe(false)
   })
 
-  it('deletes the entry of a row and reloads the list', async () => {
+  it('deletes the entry of a row after the confirm and reloads the list', async () => {
     vi.mocked(deleteWeightEntry).mockResolvedValue()
     const wrapper = await mountView()
 
     await rowButton(wrapper, 0, 'Delete').trigger('click')
+    const dialog = confirmDialog(wrapper)!
+    expect(dialog.text()).toContain('Delete 82.4 kg from 1 Oct 2026?')
+    expect(deleteWeightEntry).not.toHaveBeenCalled()
+
+    await dialog.findAll('button').find((b) => b.text() === 'Delete')!.trigger('click')
     await flushPromises()
 
     expect(deleteWeightEntry).toHaveBeenCalledWith(entries[0]!.id)
     expect(listWeightEntries).toHaveBeenCalledTimes(2)
+    expect(confirmDialog(wrapper)).toBeUndefined()
+  })
+
+  it('keeps the entry when the delete is cancelled', async () => {
+    const wrapper = await mountView()
+
+    await rowButton(wrapper, 0, 'Delete').trigger('click')
+    await confirmDialog(wrapper)!
+      .findAll('button')
+      .find((b) => b.text() === 'Cancel')!
+      .trigger('click')
+    await flushPromises()
+
+    expect(deleteWeightEntry).not.toHaveBeenCalled()
+    expect(confirmDialog(wrapper)).toBeUndefined()
   })
 
   it("puts a 400's errors onto the fields", async () => {
