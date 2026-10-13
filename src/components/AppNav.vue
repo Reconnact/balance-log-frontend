@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import IconClose from './icons/IconClose.vue'
 import IconMenu from './icons/IconMenu.vue'
 import ThemeToggle from './ThemeToggle.vue'
 import { isLoggedIn, logout } from '@/auth'
+import { menuOpen } from '@/menu'
 
 const route = useRoute()
 const router = useRouter()
-const menuOpen = ref(false)
 
 watch(
   () => route.fullPath,
@@ -67,13 +67,21 @@ const row = 'flex min-h-14 w-full items-center gap-3 text-2xl font-medium text-i
       v-if="isLoggedIn"
       v-show="menuOpen"
       id="nav-menu"
-      class="fixed inset-0 z-10 bg-bg pt-14 sm:hidden"
+      class="fixed inset-0 z-10 flex flex-col bg-bg pt-14 sm:hidden"
     >
-      <div class="mx-auto max-w-content px-4 py-4">
+      <div class="px-4 py-4">
         <RouterLink to="/weights" :class="row">Weights</RouterLink>
         <RouterLink to="/goal" :class="row">Goal</RouterLink>
         <ThemeToggle :class="row" />
-        <button type="button" :class="row" class="text-danger!" @click="onLogout">Log out</button>
+      </div>
+      <div class="mt-auto grid grid-cols-2 gap-4 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <button
+          type="button"
+          class="btn rounded-full [--btn-ink:var(--color-danger)]"
+          @click="onLogout"
+        >
+          Log out
+        </button>
       </div>
     </div>
   </Transition>

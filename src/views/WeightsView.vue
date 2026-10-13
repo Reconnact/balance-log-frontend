@@ -9,6 +9,7 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import IconPlus from '@/components/icons/IconPlus.vue'
 import { deleteWeightEntry, listWeightEntries } from '@/api/weights'
 import { getGoal } from '@/api/goal'
+import { menuOpen } from '@/menu'
 import { periodFrom, type Period } from '@/period'
 import { formatDate, formatKg } from '@/format'
 import { showToast } from '@/toasts'
@@ -39,6 +40,7 @@ function retry() {
 
 // showModal focuses the first field, so the form has to be rendered first
 async function open(entry?: WeightEntry) {
+  menuOpen.value = false
   form.value = { entry }
   await nextTick()
   dialog.value?.showModal()
@@ -100,11 +102,13 @@ watch(period, load)
 
   <button
     type="button"
-    class="btn btn-primary fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-20 size-14 rounded-full p-0 shadow-lg sm:hidden"
+    class="btn btn-primary fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-20 rounded-full transition-all duration-100 sm:hidden"
+    :class="menuOpen ? 'h-11 w-[calc(50%-1.5rem)]' : 'size-14 p-0 shadow-lg'"
     aria-label="Log weight"
     @click="open()"
   >
-    <IconPlus />
+    <span v-if="menuOpen">Log weight</span>
+    <IconPlus v-else />
   </button>
 
   <dialog ref="form-dialog" @close="form = undefined" @click="closeOnBackdrop">
