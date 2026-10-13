@@ -15,7 +15,7 @@ import { toasts } from '@/toasts'
     <li
       v-for="toast in toasts"
       :key="toast.id"
-      class="glass max-w-sm rounded-xl border-[1px] border-line bg-surface-strong px-4 py-3 text-ink shadow-lg"
+      class="glass max-w-sm rounded-xl border border-line bg-surface-strong px-4 py-3 text-ink shadow-lg"
       :class="{ 'border-l-4 border-l-danger': toast.kind === 'error' }"
     >
       {{ toast.text }}

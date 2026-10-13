@@ -12,6 +12,11 @@ export default defineConfig({
     tailwindcss(),
     vueDevTools(),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: { quietDeps: true },
+    },
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

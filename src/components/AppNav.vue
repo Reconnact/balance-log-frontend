@@ -20,7 +20,7 @@ function onLogout() {
 }
 
 const item =
-  'inline-flex min-h-11 items-center gap-2 rounded-xl border-0 bg-transparent px-3 text-base font-medium text-ink no-underline not-[.router-link-active]:text-muted hover:text-ink'
+  'inline-flex min-h-11 items-center gap-2 rounded-xl border-0 bg-transparent px-3 text-base font-medium text-muted no-underline hover:text-ink [&.router-link-active]:text-ink'
 const row =
   'flex min-h-11 w-full items-center gap-3 border-x-0 border-t-0 border-b border-line bg-transparent px-0 text-base last:border-b-0 font-medium text-ink no-underline'
 </script>
