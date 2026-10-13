@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { isAxiosError } from 'axios'
 import { setGoal } from '@/api/goal'
 import { weightKgError } from '@/validation'
+import KgInput from './KgInput.vue'
 import type { Goal } from '@/types'
 
 const props = defineProps<{ targetKg?: number }>()
@@ -34,16 +35,14 @@ async function submit() {
       Goal weight (kg)
     </label>
     <div class="flex gap-3">
-      <input
-        id="targetKg"
-        v-model="targetKg"
-        type="number"
-        step="0.1"
-        inputmode="decimal"
-        class="field min-w-0 flex-1 sm:max-w-60"
-        :aria-invalid="!!error"
-        :aria-describedby="error ? 'targetKg-error' : undefined"
-      />
+      <div class="min-w-0 flex-1 sm:max-w-60">
+        <KgInput
+          id="targetKg"
+          v-model="targetKg"
+          :aria-invalid="!!error"
+          :aria-describedby="error ? 'targetKg-error' : undefined"
+        />
+      </div>
       <button type="submit" class="btn btn-primary" :disabled="saving" :aria-busy="saving">
         Set goal
       </button>

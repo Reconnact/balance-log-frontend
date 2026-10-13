@@ -3,8 +3,7 @@ import { ref } from 'vue'
 import { isAxiosError } from 'axios'
 import { createWeightEntry, updateWeightEntry } from '@/api/weights'
 import { measuredAtError, weightKgError } from '@/validation'
-import IconMinus from './icons/IconMinus.vue'
-import IconPlus from './icons/IconPlus.vue'
+import KgInput from './KgInput.vue'
 import type { WeightEntry } from '@/types'
 
 const props = defineProps<{ entry?: WeightEntry; lastKg?: number }>()
@@ -25,16 +24,6 @@ function toLocalInput(iso: string) {
 function blockNonNumeric(event: InputEvent) {
   if (event.data && /[^\d.,]/.test(event.data)) event.preventDefault()
 }
-
-function stepUp() {
-  if (weightKg.value !== '') weightKg.value = Math.floor(weightKg.value) + 1
-}
-
-function stepDown() {
-  if (weightKg.value !== '') weightKg.value = Math.ceil(weightKg.value) - 1
-}
-
-const step = 'flex w-11 items-center justify-center rounded-xl text-muted hover:text-ink'
 
 async function submit() {
   errors.value = {
@@ -71,27 +60,13 @@ async function submit() {
       <label for="weightKg" class="mb-1.5 block text-label font-medium text-muted">
         Weight (kg)
       </label>
-      <div class="relative">
-        <input
-          id="weightKg"
-          v-model="weightKg"
-          type="number"
-          step="0.1"
-          inputmode="decimal"
-          class="field pr-24"
-          :aria-invalid="!!errors.weightKg"
-          @beforeinput="blockNonNumeric"
-          :aria-describedby="errors.weightKg ? 'weightKg-error' : undefined"
-        />
-        <div class="absolute inset-y-0 right-0 flex">
-          <button type="button" :class="step" aria-label="1 kg less" @click="stepDown">
-            <IconMinus />
-          </button>
-          <button type="button" :class="step" aria-label="1 kg more" @click="stepUp">
-            <IconPlus />
-          </button>
-        </div>
-      </div>
+      <KgInput
+        id="weightKg"
+        v-model="weightKg"
+        :aria-invalid="!!errors.weightKg"
+        @beforeinput="blockNonNumeric"
+        :aria-describedby="errors.weightKg ? 'weightKg-error' : undefined"
+      />
       <p v-if="errors.weightKg" id="weightKg-error" class="mt-1.5 text-label text-danger">
         {{ errors.weightKg }}
       </p>
