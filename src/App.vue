@@ -5,7 +5,7 @@ import AppNav from '@/components/AppNav.vue'
 
 <template>
   <AppNav />
-  <main class="container">
+  <main class="mx-auto max-w-content px-4 py-6">
     <RouterView />
   </main>
 </template>

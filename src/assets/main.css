@@ -24,6 +24,8 @@
 
   --font-sans: 'Geist', system-ui, sans-serif;
 
+  --container-content: 52rem;
+
   --color-bg: #eef0f3;
   --color-surface: rgb(255 255 255 / 0.78);
   --color-surface-strong: rgb(246 247 249 / 0.72);
@@ -60,6 +62,10 @@
   }
 }
 
+@utility glass {
+  backdrop-filter: blur(20px) saturate(1.4);
+}
+
 @layer base {
   body {
     min-height: 100dvh;
@@ -82,6 +88,7 @@
   --bs-body-color: var(--color-ink);
   --bs-emphasis-color: var(--color-ink);
   --bs-border-color: var(--color-line);
+  --bs-secondary-color: var(--color-muted);
 
   @variant dark {
     --bs-emphasis-color-rgb: 242, 244, 246;
