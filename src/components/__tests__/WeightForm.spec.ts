@@ -51,6 +51,20 @@ describe('WeightForm', () => {
     expect(wrapper.emitted('saved')).toEqual([[entry]])
   })
 
+  it('blocks letters in the weight field', () => {
+    const input = mount(WeightForm).find('#weightKg').element
+    const typed = (data: string) => {
+      const event = new InputEvent('beforeinput', { data, cancelable: true })
+      input.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+
+    expect(typed('a')).toBe(true)
+    expect(typed('e')).toBe(true)
+    expect(typed('8')).toBe(false)
+    expect(typed('.')).toBe(false)
+  })
+
   it('logs an entry without a time when the field is cleared', async () => {
     vi.mocked(createWeightEntry).mockResolvedValue(entry)
     const wrapper = mount(WeightForm)
