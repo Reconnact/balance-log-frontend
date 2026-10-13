@@ -15,12 +15,8 @@ import { toasts } from '@/toasts'
     <li
       v-for="toast in toasts"
       :key="toast.id"
-      class="glass max-w-sm rounded-xl border px-4 py-3 shadow-lg"
-      :class="
-        toast.kind === 'success'
-          ? 'border-success bg-success text-on-accent'
-          : 'border-line border-l-4 border-l-danger bg-surface-strong text-ink'
-      "
+      class="glass max-w-sm rounded-xl border border-l-4 border-line bg-surface-strong px-4 py-3 text-ink shadow-lg"
+      :class="toast.kind === 'success' ? 'border-l-success' : 'border-l-danger'"
     >
       {{ toast.text }}
     </li>
