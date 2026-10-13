@@ -1,45 +1,59 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import IconDelete from './icons/IconDelete.vue'
+import IconEdit from './icons/IconEdit.vue'
+import { formatDate, formatDateTime, formatKg } from '@/format'
 import type { WeightEntry } from '@/types'
 
-defineProps<{ entries: WeightEntry[] }>()
+const props = defineProps<{ entries: WeightEntry[] }>()
 const emit = defineEmits<{ edit: [entry: WeightEntry]; delete: [entry: WeightEntry] }>()
 
-function formatDate(measuredAt: string) {
-  return new Date(measuredAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
+// the API sends oldest first
+const newestFirst = computed(() =>
+  [...props.entries].sort((a, b) => Date.parse(b.measuredAt) - Date.parse(a.measuredAt)),
+)
+
+function name(entry: WeightEntry) {
+  return `${formatKg(entry.weightKg)}, ${formatDate(entry.measuredAt)}`
 }
+
+const icon = 'inline-flex size-11 items-center justify-center rounded-xl text-muted hover:text-ink'
 </script>
 
 <template>
-  <table v-if="entries.length" class="table">
-    <thead>
-      <tr>
-        <th>Measured</th>
-        <th class="text-end">Weight</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="entry in entries" :key="entry.id">
-        <td>{{ formatDate(entry.measuredAt) }}</td>
-        <td class="text-end">{{ entry.weightKg.toFixed(1) }} kg</td>
-        <td class="text-end text-nowrap">
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary"
-            @click="emit('edit', entry)"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-outline-secondary ms-2"
-            @click="emit('delete', entry)"
-          >
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <p v-else class="text-body-secondary">No entries yet.</p>
+  <ul v-if="entries.length" class="panel">
+    <li
+      v-for="entry in newestFirst"
+      :key="entry.id"
+      class="grid grid-cols-[1fr_auto] items-center gap-x-4 border-b border-line py-1.5 pr-1.5 pl-4 last:border-b-0 sm:grid-cols-[1fr_auto_auto]"
+    >
+      <span class="col-start-1 row-start-1 text-lg font-semibold sm:col-start-2 sm:text-right">
+        {{ formatKg(entry.weightKg) }}
+      </span>
+      <span class="col-start-1 row-start-2 text-muted sm:row-start-1">
+        {{ formatDateTime(entry.measuredAt) }}
+      </span>
+      <span class="col-start-2 row-span-2 row-start-1 flex sm:col-start-3 sm:row-span-1">
+        <button
+          type="button"
+          :class="icon"
+          :aria-label="`Edit ${name(entry)}`"
+          @click="emit('edit', entry)"
+        >
+          <IconEdit />
+        </button>
+        <button
+          type="button"
+          :class="icon"
+          :aria-label="`Delete ${name(entry)}`"
+          @click="emit('delete', entry)"
+        >
+          <IconDelete />
+        </button>
+      </span>
+    </li>
+  </ul>
+  <p v-else class="panel px-4 py-6 text-center text-muted">
+    No weights yet. Log one to start the curve.
+  </p>
 </template>

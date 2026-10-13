@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { flushPromises, mount } from '@vue/test-utils'
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { AxiosError, AxiosHeaders } from 'axios'
 import WeightForm from '../WeightForm.vue'
 import { createWeightEntry, updateWeightEntry } from '@/api/weights'
@@ -21,6 +21,12 @@ function failedWith(status: number, data: unknown) {
     config,
     data,
   })
+}
+
+function errorOf(wrapper: VueWrapper, field: string) {
+  const input = wrapper.find(`#${field}`)
+  expect(input.attributes('aria-invalid')).toBe('true')
+  return wrapper.find(`#${input.attributes('aria-describedby')}`).text()
 }
 
 describe('WeightForm', () => {
@@ -81,10 +87,7 @@ describe('WeightForm', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.find('#weightKg').classes()).toContain('is-invalid')
-    expect(wrapper.find('#weightKg + .invalid-feedback').text()).toBe(
-      'Between 20 and 400 kg, one decimal.',
-    )
+    expect(errorOf(wrapper, 'weightKg')).toBe('Between 20 and 400 kg, one decimal.')
     expect(createWeightEntry).not.toHaveBeenCalled()
   })
 
@@ -98,8 +101,33 @@ describe('WeightForm', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.find('#measuredAt').classes()).toContain('is-invalid')
-    expect(wrapper.find('#measuredAt + .invalid-feedback').text()).toBe("Can't be in the future.")
+    expect(errorOf(wrapper, 'measuredAt')).toBe("Can't be in the future.")
+    expect(wrapper.emitted('saved')).toBeUndefined()
+  })
+
+  it('shows the save button busy while saving', async () => {
+    vi.mocked(createWeightEntry).mockReturnValue(new Promise(() => {}))
+    const wrapper = mount(WeightForm)
+
+    await wrapper.find('#weightKg').setValue('82.4')
+    await wrapper.find('form').trigger('submit')
+
+    const save = wrapper.find('button[type="submit"]')
+    expect(save.attributes('disabled')).toBeDefined()
+    expect(save.attributes('aria-busy')).toBe('true')
+  })
+
+  it('keeps the input and frees the button after a failed save', async () => {
+    vi.mocked(createWeightEntry).mockRejectedValue(failedWith(503, {}))
+    // the form rethrows what it can't show; the client already toasted it
+    const wrapper = mount(WeightForm, { global: { config: { errorHandler: () => {} } } })
+
+    await wrapper.find('#weightKg').setValue('82.4')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.find<HTMLInputElement>('#weightKg').element.value).toBe('82.4')
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined()
     expect(wrapper.emitted('saved')).toBeUndefined()
   })
 

@@ -11,8 +11,12 @@ const router = createRouter({
       meta: { public: true },
     },
     { path: '/', redirect: '/weights' },
-    { path: '/weights', component: () => import('../views/WeightsView.vue') },
-    { path: '/goal', component: () => import('../views/GoalView.vue') },
+    {
+      path: '/weights',
+      component: () => import('../views/WeightsView.vue'),
+      meta: { title: 'Weights' },
+    },
+    { path: '/goal', component: () => import('../views/GoalView.vue'), meta: { title: 'Goal' } },
   ],
 })
 
@@ -20,6 +24,11 @@ router.beforeEach((to) => {
   if (!token.value && !to.meta.public) {
     return { path: '/login', query: { redirect: to.fullPath } }
   }
+  if (token.value && to.meta.public) return '/weights'
+})
+
+router.afterEach((to) => {
+  document.title = to.meta.title ? `${to.meta.title} · Balance Log` : 'Balance Log'
 })
 
 export default router

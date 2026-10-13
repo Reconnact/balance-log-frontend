@@ -1,30 +1,207 @@
+@import 'tailwindcss';
+
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme]), :root:not([data-theme]) *) {
+      @slot;
+    }
+  }
+}
+
+@theme static {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 36rem;
+
+  --font-sans: 'Geist', system-ui, sans-serif;
+
+  --container-content: 52rem;
+
+  --text-title: 2.125rem;
+  --text-label: 0.8125rem;
+
+  --color-bg: #eef0f3;
+  --color-surface: rgb(255 255 255 / 0.78);
+  --color-surface-strong: rgb(246 247 249 / 0.72);
+  --color-ink: #111417;
+  --color-muted: #5f6872;
+  --color-line: rgb(17 20 23 / 0.09);
+  --color-grid: rgb(17 20 23 / 0.06);
+  --color-accent: #3d5a75;
+  --color-on-accent: #ffffff;
+  --color-danger: #c4221b;
+  --color-chart-fill: rgb(61 90 117 / 0.12);
+  --color-goal-line: #8b96a1;
+}
+
 :root {
-  --bs-primary: #212529;
-  --bs-primary-rgb: 33, 37, 41;
-  --bs-link-color: #212529;
-  --bs-link-color-rgb: 33, 37, 41;
-  --bs-link-hover-color: #6c757d;
-  --bs-link-hover-color-rgb: 108, 117, 125;
-  --bs-focus-ring-color: rgba(33, 37, 41, 0.25);
+  --bg-tint: linear-gradient(180deg, #dfe5ec 0%, transparent 380px);
+  color-scheme: light;
+
+  @variant dark {
+    --bg-tint: linear-gradient(180deg, #121a22 0%, transparent 380px);
+    color-scheme: dark;
+    --color-bg: #000000;
+    --color-surface: rgb(255 255 255 / 0.07);
+    --color-surface-strong: rgb(18 20 23 / 0.72);
+    --color-ink: #f2f4f6;
+    --color-muted: #98a2ac;
+    --color-line: rgb(255 255 255 / 0.1);
+    --color-grid: rgb(255 255 255 / 0.07);
+    --color-accent: #93b4d1;
+    --color-on-accent: #000000;
+    --color-danger: #ff7b72;
+    --color-chart-fill: rgb(147 180 209 / 0.18);
+    --color-goal-line: #5a6672;
+  }
 }
 
-.form-control:focus {
-  border-color: #adb5bd;
-  box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+@utility glass {
+  backdrop-filter: blur(20px) saturate(1.4);
 }
 
-.nav-link:focus-visible {
-  box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+@layer components {
+  .panel {
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+
+  .field {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 0.875rem;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-size: 1rem;
+
+    &[aria-invalid='true'] {
+      border-color: var(--color-danger);
+    }
+  }
+
+  .btn {
+    --btn-ink: var(--color-ink);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--btn-ink);
+    font-weight: 600;
+    line-height: 1.25;
+    cursor: pointer;
+    backdrop-filter: blur(20px) saturate(1.4);
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    &[aria-busy='true'] {
+      opacity: 1;
+      color: transparent;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: auto;
+        border: 2px solid var(--btn-ink);
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: btn-spin 0.8s linear infinite;
+      }
+    }
+  }
+
+  .btn-primary {
+    --btn-ink: var(--color-on-accent);
+    border-color: transparent;
+    background: var(--color-accent);
+  }
+
+  .btn-danger {
+    --btn-ink: var(--color-on-accent);
+    border-color: transparent;
+    background: var(--color-danger);
+  }
 }
 
-dialog {
-  width: min(36rem, 100% - 2rem);
+@keyframes btn-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
-}
+@layer base {
+  html {
+    scrollbar-width: none;
+  }
 
-body:has(dialog[open]) {
-  overflow: hidden;
+  /* Safari before 18.2 ignores scrollbar-width */
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
+  body {
+    min-height: 100dvh;
+    background: var(--bg-tint) no-repeat var(--color-bg);
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  dialog {
+    width: min(28rem, 100% - 2rem);
+    margin: auto;
+    border: 1px solid var(--color-line);
+    border-radius: 16px;
+    background: var(--color-surface-strong);
+    color: var(--color-ink);
+    box-shadow: 0 24px 64px rgb(0 0 0 / 0.2);
+    backdrop-filter: blur(20px) saturate(1.4);
+    transition:
+      opacity 180ms,
+      scale 180ms;
+
+    @starting-style {
+      &[open] {
+        opacity: 0;
+        scale: 0.97;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  dialog::backdrop {
+    background: rgb(0 0 0 / 0.35);
+  }
+
+  body:has(dialog[open]) {
+    overflow: hidden;
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }

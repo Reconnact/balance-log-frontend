@@ -4,6 +4,7 @@ import { AxiosError, AxiosHeaders } from 'axios'
 import LoginView from '../LoginView.vue'
 import router from '@/router'
 import { login } from '@/api/auth'
+import { toasts } from '@/toasts'
 
 vi.mock('@/api/auth')
 
@@ -35,18 +36,49 @@ describe('LoginView', () => {
 
     const wrapper = await submit()
 
-    expect(wrapper.find('#email').classes()).toContain('is-invalid')
-    expect(wrapper.find('#email + .invalid-feedback').text()).toBe('Enter a valid email address.')
-    expect(wrapper.find('#password').classes()).toContain('is-invalid')
-    expect(wrapper.find('#password + .invalid-feedback').text()).toBe('8 to 72 characters.')
+    for (const [field, message] of [
+      ['email', 'Enter a valid email address.'],
+      ['password', '8 to 72 characters.'],
+    ]) {
+      const input = wrapper.find(`#${field}`)
+      expect(input.attributes('aria-invalid')).toBe('true')
+      expect(wrapper.find(`#${input.attributes('aria-describedby')}`).text()).toBe(message)
+    }
   })
 
-  it("shows a 401's message", async () => {
+  it("shows a 401's message as an error toast", async () => {
     vi.mocked(login).mockRejectedValue(failedWith(401, { detail: 'Wrong email or password.' }))
 
     const wrapper = await submit()
 
-    expect(wrapper.text()).toContain('Wrong email or password.')
-    expect(wrapper.find('.is-invalid').exists()).toBe(false)
+    expect(toasts.value.map((t) => [t.text, t.kind])).toEqual([
+      ['Wrong email or password.', 'error'],
+    ])
+    expect(wrapper.text()).not.toContain('Wrong email or password.')
+    expect(wrapper.find('[aria-invalid="true"]').exists()).toBe(false)
+    toasts.value = []
+  })
+})
+
+describe('LoginView while logging in', () => {
+  it('disables the button and shows it busy', async () => {
+    vi.mocked(login).mockReturnValue(new Promise(() => {}))
+    const wrapper = mount(LoginView, { global: { plugins: [router] } })
+
+    await wrapper.find('form').trigger('submit')
+
+    const button = wrapper.find('button[type="submit"]')
+    expect(button.attributes('disabled')).toBeDefined()
+    expect(button.attributes('aria-busy')).toBe('true')
+  })
+})
+
+describe('LoginView after an expired session', () => {
+  it('says the session expired', async () => {
+    await router.push('/login?redirect=/goal&expired=1')
+
+    const wrapper = mount(LoginView, { global: { plugins: [router] } })
+
+    expect(wrapper.text()).toContain('Your session expired. Log in again.')
   })
 })

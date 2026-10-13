@@ -1,40 +1,66 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from 'vue-router'
+import { ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import IconMenu from './icons/IconMenu.vue'
+import ThemeToggle from './ThemeToggle.vue'
 import { isLoggedIn, logout } from '@/auth'
 
+const route = useRoute()
 const router = useRouter()
+const menuOpen = ref(false)
+
+watch(
+  () => route.fullPath,
+  () => (menuOpen.value = false),
+)
 
 function onLogout() {
   logout()
   router.push('/login')
 }
+
+const item =
+  'inline-flex min-h-11 items-center gap-2 rounded-xl px-3 text-base font-medium text-muted hover:text-ink [&.router-link-active]:text-ink'
+const row =
+  'flex min-h-11 w-full items-center gap-3 border-b border-line text-base font-medium text-ink last:border-b-0'
 </script>
 
 <template>
-  <nav class="navbar navbar-expand border-bottom mb-4">
-    <div class="container">
-      <RouterLink to="/" class="navbar-brand">Balance Log</RouterLink>
-      <ul class="navbar-nav ms-auto">
-        <template v-if="isLoggedIn">
-          <li class="nav-item">
-            <RouterLink to="/weights" class="nav-link">Weights</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink to="/goal" class="nav-link">Goal</RouterLink>
-          </li>
-          <li class="nav-item">
-            <button type="button" class="nav-link" @click="onLogout">Log out</button>
-          </li>
-        </template>
-        <template v-else>
-          <li class="nav-item">
-            <RouterLink to="/login" class="nav-link">Log in</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink to="/register" class="nav-link">Register</RouterLink>
-          </li>
-        </template>
-      </ul>
+  <header class="glass sticky top-0 z-20 border-b border-line bg-surface-strong">
+    <nav class="mx-auto flex h-14 max-w-content items-center px-4">
+      <RouterLink to="/" class="mr-auto text-[17px] font-semibold text-ink">
+        Balance Log
+      </RouterLink>
+      <template v-if="isLoggedIn">
+        <div class="hidden items-center sm:flex">
+          <RouterLink to="/weights" :class="item">Weights</RouterLink>
+          <RouterLink to="/goal" :class="item">Goal</RouterLink>
+          <ThemeToggle :class="item" />
+          <button type="button" :class="item" @click="onLogout">Log out</button>
+        </div>
+        <button
+          type="button"
+          class="-mr-3 inline-flex size-11 items-center justify-center rounded-xl text-ink sm:hidden"
+          aria-label="Menu"
+          aria-controls="nav-menu"
+          :aria-expanded="menuOpen"
+          @click="menuOpen = !menuOpen"
+        >
+          <IconMenu />
+        </button>
+      </template>
+      <ThemeToggle v-else :class="item" class="-mr-3" />
+    </nav>
+    <div
+      v-if="isLoggedIn"
+      v-show="menuOpen"
+      id="nav-menu"
+      class="mx-auto max-w-content border-t border-line px-4 pb-2 sm:hidden"
+    >
+      <RouterLink to="/weights" :class="row">Weights</RouterLink>
+      <RouterLink to="/goal" :class="row">Goal</RouterLink>
+      <ThemeToggle :class="row" />
+      <button type="button" :class="row" @click="onLogout">Log out</button>
     </div>
-  </nav>
+  </header>
 </template>

@@ -44,7 +44,9 @@ describe('GoalForm', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.find('#targetKg + .invalid-feedback').text()).toBe(
+    const input = wrapper.find('#targetKg')
+    expect(input.attributes('aria-invalid')).toBe('true')
+    expect(wrapper.find(`#${input.attributes('aria-describedby')}`).text()).toBe(
       'Between 20 and 400 kg, one decimal.',
     )
     expect(setGoal).not.toHaveBeenCalled()
@@ -60,7 +62,19 @@ describe('GoalForm', () => {
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.find('#targetKg').classes()).toContain('is-invalid')
+    expect(wrapper.find('#targetKg').attributes('aria-invalid')).toBe('true')
     expect(wrapper.emitted('saved')).toBeUndefined()
+  })
+
+  it('shows the button busy while saving', async () => {
+    vi.mocked(setGoal).mockReturnValue(new Promise(() => {}))
+    const wrapper = mount(GoalForm)
+
+    await wrapper.find('#targetKg').setValue('75')
+    await wrapper.find('form').trigger('submit')
+
+    const button = wrapper.find('button[type="submit"]')
+    expect(button.attributes('disabled')).toBeDefined()
+    expect(button.attributes('aria-busy')).toBe('true')
   })
 })
