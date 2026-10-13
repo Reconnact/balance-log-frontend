@@ -31,6 +31,7 @@ async function submit() {
   <div class="row justify-content-center">
     <div class="col-sm-8 col-md-6 col-lg-4">
       <h1 class="h3 mb-4">Log in</h1>
+      <p v-if="route.query.expired">Your session expired. Log in again.</p>
       <form novalidate @submit.prevent="submit">
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>

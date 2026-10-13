@@ -50,3 +50,13 @@ describe('LoginView', () => {
     expect(wrapper.find('.is-invalid').exists()).toBe(false)
   })
 })
+
+describe('LoginView after an expired session', () => {
+  it('says the session expired', async () => {
+    await router.push('/login?redirect=/goal&expired=1')
+
+    const wrapper = mount(LoginView, { global: { plugins: [router] } })
+
+    expect(wrapper.text()).toContain('Your session expired. Log in again.')
+  })
+})
