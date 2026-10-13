@@ -31,6 +31,10 @@ async function saved() {
   await load()
 }
 
+function closeOnBackdrop(event: MouseEvent) {
+  if (event.target === dialog.value) dialog.value?.close()
+}
+
 async function remove(entry: WeightEntry) {
   await deleteWeightEntry(entry.id)
   await load()
@@ -56,10 +60,10 @@ watch(period, load)
   </div>
   <WeightList :entries="entries" @edit="open" @delete="remove" />
 
-  <dialog ref="form-dialog" class="border-0 rounded-3 shadow p-4" @close="form = undefined">
-    <template v-if="form">
-      <h2 class="h5 mb-3">{{ form.entry ? 'Edit entry' : 'Log weight' }}</h2>
+  <dialog ref="form-dialog" @close="form = undefined" @click="closeOnBackdrop">
+    <div v-if="form" class="p-5">
+      <h2 class="mb-4 text-xl font-bold">{{ form.entry ? 'Edit entry' : 'Log weight' }}</h2>
       <WeightForm :entry="form.entry" @saved="saved" @cancel="dialog?.close()" />
-    </template>
+    </div>
   </dialog>
 </template>

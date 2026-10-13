@@ -206,8 +206,37 @@ describe('WeightsView', () => {
     await wrapper.find('dialog form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.find('dialog #weightKg + .invalid-feedback').text()).toBe(
+    const field = wrapper.find('dialog #weightKg')
+    expect(wrapper.find(`#${field.attributes('aria-describedby')}`).text()).toBe(
       'Between 20 and 400 kg, one decimal.',
     )
+  })
+
+  it('keeps the dialog open with the input after a failed save', async () => {
+    vi.mocked(createWeightEntry).mockRejectedValue(failedWith(503, {}))
+    // the form rethrows what it can't show; the client already toasted it
+    const wrapper = mount(WeightsView, {
+      global: { stubs: { WeightChart: true }, config: { errorHandler: () => {} } },
+    })
+    await flushPromises()
+
+    await button(wrapper, 'Log weight').trigger('click')
+    await wrapper.find('dialog #weightKg').setValue('82.4')
+    await wrapper.find('dialog form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
+    expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('82.4')
+  })
+
+  it('closes the dialog on a backdrop click, not on a click inside', async () => {
+    const wrapper = await mountView()
+    await button(wrapper, 'Log weight').trigger('click')
+
+    await wrapper.find('dialog #weightKg').trigger('click')
+    expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
+
+    await wrapper.find('dialog').trigger('click')
+    expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(false)
   })
 })

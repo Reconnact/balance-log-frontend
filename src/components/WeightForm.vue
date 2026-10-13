@@ -11,6 +11,7 @@ const emit = defineEmits<{ saved: [entry: WeightEntry]; cancel: [] }>()
 const weightKg = ref<number | ''>(props.entry?.weightKg ?? '')
 const measuredAt = ref(toLocalInput(props.entry?.measuredAt ?? new Date().toISOString()))
 const errors = ref<Record<string, string | undefined>>({})
+const saving = ref(false)
 
 // datetime-local wants local time without a zone, toISOString gives UTC
 function toLocalInput(iso: string) {
@@ -29,6 +30,7 @@ async function submit() {
     weightKg: weightKg.value as number,
     measuredAt: measuredAt.value ? new Date(measuredAt.value).toISOString() : undefined,
   }
+  saving.value = true
   try {
     emit(
       'saved',
@@ -40,42 +42,52 @@ async function submit() {
     if (isAxiosError(error) && error.response?.status === 400)
       errors.value = error.response.data.errors
     else throw error
+  } finally {
+    saving.value = false
   }
 }
 </script>
 
 <template>
-  <form novalidate @submit.prevent="submit">
-    <div class="row g-3 align-items-start">
-      <div class="col-sm">
-        <label for="weightKg" class="form-label">Weight (kg)</label>
-        <input
-          id="weightKg"
-          v-model="weightKg"
-          type="number"
-          step="0.1"
-          inputmode="decimal"
-          class="form-control"
-          :class="{ 'is-invalid': errors.weightKg }"
-        />
-        <div class="invalid-feedback">{{ errors.weightKg }}</div>
-      </div>
-      <div class="col-sm">
-        <label for="measuredAt" class="form-label">Measured</label>
-        <input
-          id="measuredAt"
-          v-model="measuredAt"
-          type="datetime-local"
-          class="form-control"
-          :class="{ 'is-invalid': errors.measuredAt }"
-        />
-        <div class="invalid-feedback">{{ errors.measuredAt }}</div>
-      </div>
+  <form novalidate class="flex flex-col gap-4" @submit.prevent="submit">
+    <div>
+      <label for="weightKg" class="mb-1.5 block text-label font-medium text-muted">
+        Weight (kg)
+      </label>
+      <input
+        id="weightKg"
+        v-model="weightKg"
+        type="number"
+        step="0.1"
+        inputmode="decimal"
+        class="field"
+        :aria-invalid="!!errors.weightKg"
+        :aria-describedby="errors.weightKg ? 'weightKg-error' : undefined"
+      />
+      <p v-if="errors.weightKg" id="weightKg-error" class="mt-1.5 mb-0 text-label text-danger">
+        {{ errors.weightKg }}
+      </p>
     </div>
-    <div class="d-flex gap-2 mt-3">
-      <button type="submit" class="btn btn-dark">{{ entry ? 'Save' : 'Log' }}</button>
-      <button type="button" class="btn btn-outline-secondary" @click="emit('cancel')">
-        Cancel
+    <div>
+      <label for="measuredAt" class="mb-1.5 block text-label font-medium text-muted">
+        Measured
+      </label>
+      <input
+        id="measuredAt"
+        v-model="measuredAt"
+        type="datetime-local"
+        class="field"
+        :aria-invalid="!!errors.measuredAt"
+        :aria-describedby="errors.measuredAt ? 'measuredAt-error' : undefined"
+      />
+      <p v-if="errors.measuredAt" id="measuredAt-error" class="mt-1.5 mb-0 text-label text-danger">
+        {{ errors.measuredAt }}
+      </p>
+    </div>
+    <div class="mt-1 grid grid-cols-2 gap-3">
+      <button type="button" class="btn" @click="emit('cancel')">Cancel</button>
+      <button type="submit" class="btn btn-primary" :disabled="saving" :aria-busy="saving">
+        {{ entry ? 'Save' : 'Log' }}
       </button>
     </div>
   </form>
