@@ -147,6 +147,15 @@
 }
 
 @layer base {
+  html {
+    scrollbar-width: none;
+  }
+
+  /* Safari before 18.2 ignores scrollbar-width */
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
   body {
     min-height: 100dvh;
     background: var(--bg-tint) no-repeat var(--color-bg);
