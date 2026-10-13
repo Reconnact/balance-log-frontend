@@ -5,6 +5,7 @@ import { isAxiosError } from 'axios'
 import PasswordInput from '@/components/PasswordInput.vue'
 import IconBrand from '@/components/icons/IconBrand.vue'
 import { login } from '@/auth'
+import { showToast } from '@/toasts'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,12 +13,10 @@ const router = useRouter()
 const email = ref('')
 const password = ref('')
 const errors = ref<Record<string, string>>({})
-const message = ref('')
 const saving = ref(false)
 
 async function submit() {
   errors.value = {}
-  message.value = ''
   saving.value = true
   try {
     await login(email.value, password.value)
@@ -25,7 +24,7 @@ async function submit() {
   } catch (error) {
     if (!isAxiosError(error)) throw error
     if (error.response?.status === 400) errors.value = error.response.data.errors
-    else if (error.response?.status === 401) message.value = error.response.data.detail
+    else if (error.response?.status === 401) showToast(error.response.data.detail, 'error')
     else throw error
   } finally {
     saving.value = false
@@ -70,7 +69,6 @@ async function submit() {
             {{ errors.password }}
           </p>
         </div>
-        <p v-if="message" class="text-danger">{{ message }}</p>
         <button
           type="submit"
           class="btn btn-primary mt-1 w-full"

@@ -4,6 +4,7 @@ import { AxiosError, AxiosHeaders } from 'axios'
 import LoginView from '../LoginView.vue'
 import router from '@/router'
 import { login } from '@/api/auth'
+import { toasts } from '@/toasts'
 
 vi.mock('@/api/auth')
 
@@ -45,13 +46,17 @@ describe('LoginView', () => {
     }
   })
 
-  it("shows a 401's message", async () => {
+  it("shows a 401's message as an error toast", async () => {
     vi.mocked(login).mockRejectedValue(failedWith(401, { detail: 'Wrong email or password.' }))
 
     const wrapper = await submit()
 
-    expect(wrapper.text()).toContain('Wrong email or password.')
+    expect(toasts.value.map((t) => [t.text, t.kind])).toEqual([
+      ['Wrong email or password.', 'error'],
+    ])
+    expect(wrapper.text()).not.toContain('Wrong email or password.')
     expect(wrapper.find('[aria-invalid="true"]').exists()).toBe(false)
+    toasts.value = []
   })
 })
 
