@@ -17,7 +17,7 @@
   }
 }
 
-@theme {
+@theme static {
   --breakpoint-*: initial;
   --breakpoint-sm: 36rem;
 
@@ -38,7 +38,7 @@
   --color-accent: #3d5a75;
   --color-on-accent: #ffffff;
   --color-danger: #c4221b;
-  --color-chart-fill: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --color-chart-fill: rgb(61 90 117 / 0.12);
   --color-goal-line: #8b96a1;
 }
 
@@ -59,7 +59,7 @@
     --color-accent: #93b4d1;
     --color-on-accent: #000000;
     --color-danger: #ff7b72;
-    --color-chart-fill: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    --color-chart-fill: rgb(147 180 209 / 0.18);
     --color-goal-line: #5a6672;
   }
 }
