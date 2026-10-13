@@ -3,12 +3,13 @@ import { ref } from 'vue'
 import { isAxiosError } from 'axios'
 import { createWeightEntry, updateWeightEntry } from '@/api/weights'
 import { measuredAtError, weightKgError } from '@/validation'
+import KgInput from './KgInput.vue'
 import type { WeightEntry } from '@/types'
 
-const props = defineProps<{ entry?: WeightEntry }>()
+const props = defineProps<{ entry?: WeightEntry; lastKg?: number }>()
 const emit = defineEmits<{ saved: [entry: WeightEntry]; cancel: [] }>()
 
-const weightKg = ref<number | ''>(props.entry?.weightKg ?? '')
+const weightKg = ref<number | ''>(props.entry?.weightKg ?? props.lastKg ?? '')
 const measuredAt = ref(toLocalInput(props.entry?.measuredAt ?? new Date().toISOString()))
 const errors = ref<Record<string, string | undefined>>({})
 const saving = ref(false)
@@ -59,13 +60,9 @@ async function submit() {
       <label for="weightKg" class="mb-1.5 block text-label font-medium text-muted">
         Weight (kg)
       </label>
-      <input
+      <KgInput
         id="weightKg"
         v-model="weightKg"
-        type="number"
-        step="0.1"
-        inputmode="decimal"
-        class="field"
         :aria-invalid="!!errors.weightKg"
         @beforeinput="blockNonNumeric"
         :aria-describedby="errors.weightKg ? 'weightKg-error' : undefined"
