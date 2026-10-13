@@ -85,6 +85,14 @@
     &[aria-invalid='true'] {
       border-color: var(--color-danger);
     }
+
+    &[type='number'] {
+      appearance: textfield;
+    }
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
   }
 
   .btn {

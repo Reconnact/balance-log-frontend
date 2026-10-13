@@ -186,7 +186,7 @@ describe('WeightsView', () => {
     const wrapper = await mountView()
 
     await rowButton(wrapper, 0, 'Edit').trigger('click')
-    await wrapper.find('dialog button[type="button"]').trigger('click')
+    await button(wrapper, 'Cancel').trigger('click')
 
     expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(false)
     expect(wrapper.find('dialog form').exists()).toBe(false)

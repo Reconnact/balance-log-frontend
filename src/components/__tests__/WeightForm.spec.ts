@@ -57,6 +57,23 @@ describe('WeightForm', () => {
     expect(wrapper.find<HTMLInputElement>('#weightKg').element.value).toBe('82.1')
   })
 
+  it('steps a whole kg, from a decimal to the next whole kg', async () => {
+    const wrapper = mount(WeightForm, { props: { lastKg: 82.4 } })
+    const input = wrapper.find<HTMLInputElement>('#weightKg').element
+    const step = (label: string) => wrapper.find(`[aria-label="${label}"]`).trigger('click')
+
+    await step('1 kg more')
+    expect(input.value).toBe('83')
+    await step('1 kg more')
+    expect(input.value).toBe('84')
+
+    await wrapper.find('#weightKg').setValue('82.4')
+    await step('1 kg less')
+    expect(input.value).toBe('82')
+    await step('1 kg less')
+    expect(input.value).toBe('81')
+  })
+
   it('blocks letters in the weight field', () => {
     const input = mount(WeightForm).find('#weightKg').element
     const typed = (data: string) => {
@@ -154,7 +171,10 @@ describe('WeightForm', () => {
   it('emits cancel', async () => {
     const wrapper = mount(WeightForm)
 
-    await wrapper.find('button[type="button"]').trigger('click')
+    await wrapper
+      .findAll('button')
+      .find((b) => b.text() === 'Cancel')!
+      .trigger('click')
 
     expect(wrapper.emitted('cancel')).toHaveLength(1)
   })
