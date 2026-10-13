@@ -19,6 +19,11 @@ function toLocalInput(iso: string) {
   return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16)
 }
 
+// Firefox and Safari let any character into type="number", Chrome lets e, + and - in
+function blockNonNumeric(event: InputEvent) {
+  if (event.data && /[^\d.,]/.test(event.data)) event.preventDefault()
+}
+
 async function submit() {
   errors.value = {
     weightKg: weightKgError(weightKg.value),
@@ -62,6 +67,7 @@ async function submit() {
         inputmode="decimal"
         class="field"
         :aria-invalid="!!errors.weightKg"
+        @beforeinput="blockNonNumeric"
         :aria-describedby="errors.weightKg ? 'weightKg-error' : undefined"
       />
       <p v-if="errors.weightKg" id="weightKg-error" class="mt-1.5 text-label text-danger">
