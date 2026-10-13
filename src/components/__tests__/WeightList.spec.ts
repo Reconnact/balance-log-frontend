@@ -25,10 +25,28 @@ describe('WeightList', () => {
 
     const rows = wrapper.findAll('li')
     expect(rows).toHaveLength(2)
-    expect(rows[0]!.text()).toContain('82.4 kg')
-    expect(rows[0]!.text()).toMatch(/1 Oct 2026, \d\d:\d\d/)
-    expect(rows[1]!.text()).toContain('82.0 kg')
+    expect(rows[0]!.text()).toContain('82.0 kg')
+    expect(rows[1]!.text()).toContain('82.4 kg')
+    expect(rows[1]!.text()).toMatch(/1 Oct 2026, \d\d:\d\d/)
     expect(wrapper.text()).not.toContain('No weights yet.')
+  })
+
+  it('puts the newest entry at the top', () => {
+    const wrapper = mount(WeightList, {
+      props: {
+        entries: [
+          { ...entry, id: 'a', measuredAt: '2026-10-01T06:30:00Z', weightKg: 82.4 },
+          { ...entry, id: 'b', measuredAt: '2026-10-08T06:20:00Z', weightKg: 82 },
+          { ...entry, id: 'c', measuredAt: '2026-10-03T07:10:00Z', weightKg: 82.1 },
+        ],
+      },
+    })
+
+    expect(wrapper.findAll('li').map((li) => li.text().match(/\d+\.\d kg/)![0])).toEqual([
+      '82.0 kg',
+      '82.1 kg',
+      '82.4 kg',
+    ])
   })
 
   it('shows the empty state without entries', () => {

@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import IconDelete from './icons/IconDelete.vue'
 import IconEdit from './icons/IconEdit.vue'
 import { formatDate, formatDateTime, formatKg } from '@/format'
 import type { WeightEntry } from '@/types'
 
-defineProps<{ entries: WeightEntry[] }>()
+const props = defineProps<{ entries: WeightEntry[] }>()
 const emit = defineEmits<{ edit: [entry: WeightEntry]; delete: [entry: WeightEntry] }>()
+
+// the API sends oldest first
+const newestFirst = computed(() =>
+  [...props.entries].sort((a, b) => Date.parse(b.measuredAt) - Date.parse(a.measuredAt)),
+)
 
 function name(entry: WeightEntry) {
   return `${formatKg(entry.weightKg)}, ${formatDate(entry.measuredAt)}`
@@ -17,7 +23,7 @@ const icon = 'inline-flex size-11 items-center justify-center rounded-xl text-mu
 <template>
   <ul v-if="entries.length" class="panel">
     <li
-      v-for="entry in entries"
+      v-for="entry in newestFirst"
       :key="entry.id"
       class="grid grid-cols-[1fr_auto] items-center gap-x-4 border-b border-line py-1.5 pr-1.5 pl-4 last:border-b-0 sm:grid-cols-[1fr_auto_auto]"
     >

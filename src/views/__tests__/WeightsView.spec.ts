@@ -86,8 +86,8 @@ describe('WeightsView', () => {
 
     const rows = wrapper.findAll('li')
     expect(rows).toHaveLength(2)
-    expect(rows[0]!.text()).toContain('82.4 kg')
-    expect(rows[1]!.text()).toContain('82.1 kg')
+    expect(rows[0]!.text()).toContain('82.1 kg')
+    expect(rows[1]!.text()).toContain('82.4 kg')
     expect(wrapper.findComponent(WeightChart).props('entries')).toEqual(entries)
   })
 
@@ -155,7 +155,7 @@ describe('WeightsView', () => {
     vi.mocked(updateWeightEntry).mockResolvedValue({ ...entries[1]!, weightKg: 81.9 })
     const wrapper = await mountView()
 
-    await rowButton(wrapper, 1, 'Edit').trigger('click')
+    await rowButton(wrapper, 0, 'Edit').trigger('click')
     expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
     expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('82.1')
 
@@ -195,7 +195,7 @@ describe('WeightsView', () => {
     vi.mocked(deleteWeightEntry).mockResolvedValue()
     const wrapper = await mountView()
 
-    await rowButton(wrapper, 0, 'Delete').trigger('click')
+    await rowButton(wrapper, 1, 'Delete').trigger('click')
     const dialog = confirmDialog(wrapper)!
     expect(dialog.text()).toContain('Delete 82.4 kg from 1 Oct 2026?')
     expect(deleteWeightEntry).not.toHaveBeenCalled()
