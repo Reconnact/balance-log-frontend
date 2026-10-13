@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios'
-import client from '../client'
+import client, { slowRequests } from '../client'
 import { token } from '@/auth'
 import router from '@/router'
 import { toasts } from '@/toasts'
@@ -98,5 +98,63 @@ describe('client', () => {
     await failing(answering(400))
 
     expect(toasts.value).toEqual([])
+  })
+
+  describe('a slow request', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    function pending() {
+      let settle!: (ok: boolean) => void
+      const adapter: AxiosAdapter = (config) =>
+        new Promise((resolve, reject) => {
+          settle = (ok) =>
+            ok
+              ? resolve({ data: null, status: 200, statusText: 'OK', headers: {}, config })
+              : reject(new AxiosError('Network Error', AxiosError.ERR_NETWORK, config))
+        })
+      const request = client.get('/weight-entries', { adapter }).catch(() => {})
+      return { request, settle: (ok: boolean) => settle(ok) }
+    }
+
+    it('counts as slow after 5 seconds until it answers', async () => {
+      vi.useFakeTimers()
+      const { request, settle } = pending()
+      await vi.advanceTimersByTimeAsync(4999)
+
+      expect(slowRequests.value).toBe(0)
+
+      await vi.advanceTimersByTimeAsync(1)
+
+      expect(slowRequests.value).toBe(1)
+
+      settle(true)
+      await request
+
+      expect(slowRequests.value).toBe(0)
+    })
+
+    it('stops counting when it fails', async () => {
+      vi.useFakeTimers()
+      const { request, settle } = pending()
+      await vi.advanceTimersByTimeAsync(5000)
+
+      settle(false)
+      await request
+
+      expect(slowRequests.value).toBe(0)
+    })
+
+    it('never counts a fast request', async () => {
+      vi.useFakeTimers()
+      const { request, settle } = pending()
+      await vi.advanceTimersByTimeAsync(100)
+      settle(true)
+      await request
+      await vi.advanceTimersByTimeAsync(5000)
+
+      expect(slowRequests.value).toBe(0)
+    })
   })
 })

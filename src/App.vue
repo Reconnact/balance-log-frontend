@@ -2,10 +2,12 @@
 import { RouterView } from 'vue-router'
 import AppNav from '@/components/AppNav.vue'
 import AppToasts from '@/components/AppToasts.vue'
+import ColdStartBanner from '@/components/ColdStartBanner.vue'
 </script>
 
 <template>
   <AppNav />
+  <ColdStartBanner />
   <main class="mx-auto max-w-content px-4 py-6">
     <RouterView />
   </main>
