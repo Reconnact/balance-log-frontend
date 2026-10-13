@@ -12,6 +12,7 @@ const router = createRouter({
     },
     { path: '/', redirect: '/weights' },
     { path: '/weights', component: () => import('../views/WeightsView.vue') },
+    { path: '/goal', component: () => import('../views/GoalView.vue') },
   ],
 })
 

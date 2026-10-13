@@ -20,6 +20,9 @@ function onLogout() {
             <RouterLink to="/weights" class="nav-link">Weights</RouterLink>
           </li>
           <li class="nav-item">
+            <RouterLink to="/goal" class="nav-link">Goal</RouterLink>
+          </li>
+          <li class="nav-item">
             <button type="button" class="nav-link" @click="onLogout">Log out</button>
           </li>
         </template>
