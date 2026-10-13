@@ -21,4 +21,14 @@ describe('AppToasts', () => {
       'No connection to the server. Check your connection and try again.',
     ])
   })
+
+  it('removes a toast on click', async () => {
+    const wrapper = mount(AppToasts)
+
+    showToast('Entry saved')
+    await wrapper.vm.$nextTick()
+    await wrapper.get('li').trigger('click')
+
+    expect(toasts.value).toEqual([])
+  })
 })

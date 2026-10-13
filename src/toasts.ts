@@ -13,7 +13,9 @@ let nextId = 0
 export function showToast(text: string, kind: Toast['kind'] = 'success') {
   const id = nextId++
   toasts.value.push({ id, text, kind })
-  setTimeout(() => {
-    toasts.value = toasts.value.filter((toast) => toast.id !== id)
-  }, 4000)
+  setTimeout(() => dismissToast(id), 4000)
+}
+
+export function dismissToast(id: number) {
+  toasts.value = toasts.value.filter((toast) => toast.id !== id)
 }

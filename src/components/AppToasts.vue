@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { toasts } from '@/toasts'
+import { dismissToast, toasts } from '@/toasts'
 </script>
 
 <template>
@@ -15,8 +15,9 @@ import { toasts } from '@/toasts'
     <li
       v-for="toast in toasts"
       :key="toast.id"
-      class="glass relative max-w-sm overflow-hidden rounded-xl border border-l-0 border-line bg-surface-strong py-3 pr-4 pl-5 text-ink shadow-lg before:absolute before:inset-y-0 before:left-0 before:w-1"
+      class="glass pointer-events-auto relative max-w-sm cursor-pointer overflow-hidden rounded-xl border border-l-0 border-line bg-surface-strong py-3 pr-4 pl-5 text-ink shadow-lg before:absolute before:inset-y-0 before:left-0 before:w-1"
       :class="toast.kind === 'success' ? 'before:bg-success' : 'before:bg-danger'"
+      @click="dismissToast(toast.id)"
     >
       {{ toast.text }}
     </li>
