@@ -5,10 +5,10 @@ import { createWeightEntry, updateWeightEntry } from '@/api/weights'
 import { measuredAtError, weightKgError } from '@/validation'
 import type { WeightEntry } from '@/types'
 
-const props = defineProps<{ entry?: WeightEntry }>()
+const props = defineProps<{ entry?: WeightEntry; lastKg?: number }>()
 const emit = defineEmits<{ saved: [entry: WeightEntry]; cancel: [] }>()
 
-const weightKg = ref<number | ''>(props.entry?.weightKg ?? '')
+const weightKg = ref<number | ''>(props.entry?.weightKg ?? props.lastKg ?? '')
 const measuredAt = ref(toLocalInput(props.entry?.measuredAt ?? new Date().toISOString()))
 const errors = ref<Record<string, string | undefined>>({})
 const saving = ref(false)

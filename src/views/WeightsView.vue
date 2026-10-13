@@ -114,7 +114,12 @@ watch(period, load)
   <dialog ref="form-dialog" @close="form = undefined" @click="closeOnBackdrop">
     <div v-if="form" class="p-5">
       <h2 class="mb-4 text-xl font-bold">{{ form.entry ? 'Edit entry' : 'Log weight' }}</h2>
-      <WeightForm :entry="form.entry" @saved="saved" @cancel="dialog?.close()" />
+      <WeightForm
+        :entry="form.entry"
+        :last-kg="entries[entries.length - 1]?.weightKg"
+        @saved="saved"
+        @cancel="dialog?.close()"
+      />
     </div>
   </dialog>
 

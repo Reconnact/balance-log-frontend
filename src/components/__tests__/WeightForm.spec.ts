@@ -51,6 +51,12 @@ describe('WeightForm', () => {
     expect(wrapper.emitted('saved')).toEqual([[entry]])
   })
 
+  it('starts a new entry at the last weight', () => {
+    const wrapper = mount(WeightForm, { props: { lastKg: 82.1 } })
+
+    expect(wrapper.find<HTMLInputElement>('#weightKg').element.value).toBe('82.1')
+  })
+
   it('blocks letters in the weight field', () => {
     const input = mount(WeightForm).find('#weightKg').element
     const typed = (data: string) => {

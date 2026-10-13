@@ -121,7 +121,7 @@ describe('WeightsView', () => {
     expect(wrapper.find('dialog form').exists()).toBe(false)
     await button(wrapper, 'Log weight').trigger('click')
     expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
-    expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('')
+    expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('82.1')
 
     await wrapper.find('dialog #weightKg').setValue('82.4')
     await wrapper.find('dialog form').trigger('submit')
@@ -327,7 +327,7 @@ describe('WeightsView', () => {
     await wrapper.find('button[aria-label="Log weight"]').trigger('click')
 
     expect(wrapper.find<HTMLDialogElement>('dialog').element.open).toBe(true)
-    expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('')
+    expect(wrapper.find<HTMLInputElement>('dialog #weightKg').element.value).toBe('82.1')
   })
 
   it('confirms a logged weight with a toast', async () => {
