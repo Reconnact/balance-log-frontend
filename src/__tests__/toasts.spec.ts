@@ -25,4 +25,11 @@ describe('toasts', () => {
 
     expect(toasts.value[0]?.kind).toBe('error')
   })
+
+  it('shows a repeated text once while it is visible', () => {
+    showToast('No connection to the server. Check your connection and try again.', 'error')
+    showToast('No connection to the server. Check your connection and try again.', 'error')
+
+    expect(toasts.value).toHaveLength(1)
+  })
 })

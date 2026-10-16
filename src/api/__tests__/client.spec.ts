@@ -34,6 +34,10 @@ const noResponse: AxiosAdapter = async (config) => {
   throw new AxiosError('Network Error', AxiosError.ERR_NETWORK, config)
 }
 
+const cancelled: AxiosAdapter = async (config) => {
+  throw new AxiosError('Request aborted', AxiosError.ECONNABORTED, config)
+}
+
 async function failing(adapter: AxiosAdapter) {
   await client.get('/weight-entries', { adapter }).catch(() => {})
 }
@@ -56,6 +60,10 @@ describe('client', () => {
 
   it('gives up after 120 seconds', () => {
     expect(client.defaults.timeout).toBe(120_000)
+  })
+
+  it('reports a timeout apart from a cancelled request', () => {
+    expect(client.defaults.transitional?.clarifyTimeoutError).toBe(true)
   })
 
   it('sends a 401 with a token to login with the page and the expired note', async () => {
@@ -84,6 +92,12 @@ describe('client', () => {
     expect(toasts.value.map((t) => [t.text, t.kind])).toEqual([
       ['No connection to the server. Check your connection and try again.', 'error'],
     ])
+  })
+
+  it('shows no toast for a request the browser cancelled', async () => {
+    await failing(cancelled)
+
+    expect(toasts.value).toEqual([])
   })
 
   it('shows a toast on a server error', async () => {
@@ -118,10 +132,10 @@ describe('client', () => {
       return { request, settle: (ok: boolean) => settle(ok) }
     }
 
-    it('counts as slow after 5 seconds until it answers', async () => {
+    it('counts as slow after 2 seconds until it answers', async () => {
       vi.useFakeTimers()
       const { request, settle } = pending()
-      await vi.advanceTimersByTimeAsync(4999)
+      await vi.advanceTimersByTimeAsync(1999)
 
       expect(slowRequests.value).toBe(0)
 
@@ -138,7 +152,7 @@ describe('client', () => {
     it('stops counting when it fails', async () => {
       vi.useFakeTimers()
       const { request, settle } = pending()
-      await vi.advanceTimersByTimeAsync(5000)
+      await vi.advanceTimersByTimeAsync(2000)
 
       settle(false)
       await request
@@ -152,7 +166,7 @@ describe('client', () => {
       await vi.advanceTimersByTimeAsync(100)
       settle(true)
       await request
-      await vi.advanceTimersByTimeAsync(5000)
+      await vi.advanceTimersByTimeAsync(2000)
 
       expect(slowRequests.value).toBe(0)
     })

@@ -1,10 +1,14 @@
 import { ref } from 'vue'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { token } from '@/auth'
 import router from '@/router'
 import { showToast } from '@/toasts'
 
-const client = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL, timeout: 120_000 })
+const client = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 120_000,
+  transitional: { clarifyTimeoutError: true },
+})
 
 export const slowRequests = ref(0)
 
@@ -22,7 +26,7 @@ client.interceptors.request.use((config) => {
   const timer = setTimeout(() => {
     slow = true
     slowRequests.value++
-  }, 5000)
+  }, 2000)
   ends.set(config, () => {
     clearTimeout(timer)
     if (slow) slowRequests.value--
@@ -37,6 +41,8 @@ client.interceptors.response.use(
   },
   (error) => {
     end(error.config)
+    // Firefox reports the requests it cancels on reload as aborted
+    if (error.code === AxiosError.ECONNABORTED) return Promise.reject(error)
     const status = error.response?.status
     if (status === undefined) {
       showToast('No connection to the server. Check your connection and try again.', 'error')
