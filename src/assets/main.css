@@ -90,6 +90,12 @@
       appearance: textfield;
     }
 
+    /* iOS gives a styled date input its own min-width and content-box sizing unless appearance is none */
+    &[type='datetime-local'] {
+      appearance: none;
+      align-content: center;
+    }
+
     &::-webkit-inner-spin-button {
       appearance: none;
     }
