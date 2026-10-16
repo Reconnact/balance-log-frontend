@@ -48,6 +48,15 @@ describe('tab title', () => {
     expect(document.title).toBe('Goal · Balance Log')
   })
 
+  it('names an unknown path 404', async () => {
+    token.value = 'abc'
+
+    await router.push('/nope')
+
+    expect(router.currentRoute.value.path).toBe('/nope')
+    expect(document.title).toBe('404 · Balance Log')
+  })
+
   it('shows the app name on a page without a title', async () => {
     await router.push('/login')
 
