@@ -205,7 +205,7 @@
   }
 
   dialog::backdrop {
-    background: rgb(0 0 0 / 0.6);
+    background: rgb(0 0 0 / 0.75);
   }
 
   body:has(dialog[open]) {
