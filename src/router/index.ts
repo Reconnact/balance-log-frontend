@@ -17,6 +17,11 @@ const router = createRouter({
       meta: { title: 'Weights' },
     },
     { path: '/goal', component: () => import('../views/GoalView.vue'), meta: { title: 'Goal' } },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('../views/NotFoundView.vue'),
+      meta: { title: 'Not found' },
+    },
   ],
 })
 
