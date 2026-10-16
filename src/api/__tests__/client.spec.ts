@@ -132,10 +132,10 @@ describe('client', () => {
       return { request, settle: (ok: boolean) => settle(ok) }
     }
 
-    it('counts as slow after 5 seconds until it answers', async () => {
+    it('counts as slow after 2 seconds until it answers', async () => {
       vi.useFakeTimers()
       const { request, settle } = pending()
-      await vi.advanceTimersByTimeAsync(4999)
+      await vi.advanceTimersByTimeAsync(1999)
 
       expect(slowRequests.value).toBe(0)
 
@@ -152,7 +152,7 @@ describe('client', () => {
     it('stops counting when it fails', async () => {
       vi.useFakeTimers()
       const { request, settle } = pending()
-      await vi.advanceTimersByTimeAsync(5000)
+      await vi.advanceTimersByTimeAsync(2000)
 
       settle(false)
       await request
@@ -166,7 +166,7 @@ describe('client', () => {
       await vi.advanceTimersByTimeAsync(100)
       settle(true)
       await request
-      await vi.advanceTimersByTimeAsync(5000)
+      await vi.advanceTimersByTimeAsync(2000)
 
       expect(slowRequests.value).toBe(0)
     })

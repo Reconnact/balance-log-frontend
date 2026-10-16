@@ -26,7 +26,7 @@ client.interceptors.request.use((config) => {
   const timer = setTimeout(() => {
     slow = true
     slowRequests.value++
-  }, 5000)
+  }, 2000)
   ends.set(config, () => {
     clearTimeout(timer)
     if (slow) slowRequests.value--
